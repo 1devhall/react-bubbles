@@ -20,22 +20,20 @@ const ColorList = ({ colors, updateColors }) => {
   };
 
   const saveEdit = e => {
-    e.preventDefault();
-    if(colour.color!==colorToEdit.color){
-    // ///ADD
-      axiosWithAuth().post("api/colors", colorToEdit)
-      updateColors([...colors]);
-    }else{
-    // //EDIT
-      axiosWithAuth().put(`api/colors/${colorToEdit.id}`, colorToEdit)
-      updateColors([...colors]);
-    }
-
+    axiosWithAuth()
+      .put(`api/colors/${colorToEdit.id}`, colorToEdit)
+      .then(res => {
+        updateColors([
+          ...colors.filter(color => color.id !== colorToEdit.id),
+          res.data,
+        ]);
+        setEditing(false);
+      })
   };
 
   const deleteColor = color => {
-    const zapper=colors.filter(item=>{return ((item.color!==color.color)&&(item.code.hex!==color.code.hex))})
-    updateColors(zapper)
+    const dcol=colors.filter(item=>{return ((item.color!==color.color)&&(item.code.hex!==color.code.hex))})
+    updateColors(dcol)
     axiosWithAuth().delete(`api/colors/${color.id}`)
   };
 
